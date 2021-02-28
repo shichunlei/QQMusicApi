@@ -89,14 +89,12 @@ module.exports = {
       const {list = [], sortId, categoryId, ein, sum} = result.data;
       res.send({
         result: 100,
-        data: {
-          list,
-          sort: sortId,
-          category: categoryId,
-          pageNo,
-          pageSize,
-          total: sum,
-        }
+        data: list,
+        sort: sortId,
+        category: categoryId,
+        pageNo,
+        pageSize,
+        total: sum
       });
     }
   },

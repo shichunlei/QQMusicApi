@@ -6,7 +6,7 @@ module.exports = {
   '/desc': async (req, res, next) => {
     const { singermid, raw } = req.query;
     const { cache } = global;
-  
+
     let cacheKey = `singer_desc_${singermid}_${raw}`;
     let cacheData = cache.get(cacheKey)
     if (cacheData) {
@@ -62,9 +62,9 @@ module.exports = {
   // 获取歌手专辑
   '/album': async (req, res, next) => {
     const { singermid, pageNo = 1, pageSize = 20, raw } = req.query;
-  
+
     const { cache } = global;
-  
+
     let cacheKey = `singer_album_${singermid}_${pageNo}_${pageSize}_${raw}`;
     let cacheData = cache.get(cacheKey)
     if (cacheData) {
@@ -76,7 +76,7 @@ module.exports = {
         errMsg: 'singermid 不能为空',
       })
     }
-  
+
     const result = await request({
       url: 'http://u.y.qq.com/cgi-bin/musicu.fcg',
       data: {
@@ -99,7 +99,7 @@ module.exports = {
         })
       }
     });
-  
+
     if (Number(raw)) {
       res.send(result);
     } else {
@@ -125,9 +125,9 @@ module.exports = {
   '/songs': async (req, res) => {
     const { singermid, num, raw, page = 1 } = req.query;
     const pageSize = num ? parseInt(num) : 20;
-  
+
     const { cache } = global;
-  
+
     let cacheKey = `singer_album_${singermid}_${pageSize}_${raw}_${page}`;
     let cacheData = cache.get(cacheKey)
     if (cacheData) {
@@ -139,7 +139,7 @@ module.exports = {
         errMsg: 'singermid 不能为空',
       })
     }
-  
+
     const result = await request({
       url: 'http://u.y.qq.com/cgi-bin/musicu.fcg',
       data: {
@@ -161,7 +161,7 @@ module.exports = {
         })
       }
     });
-  
+
     if (Number(raw)) {
       res.send(result);
     } else {
@@ -169,7 +169,7 @@ module.exports = {
       list.forEach((o, i) => {
         Object.assign(o, extras[i] || {});
       });
-  
+
       cacheData = {
         result: 100,
         data: {
@@ -189,14 +189,14 @@ module.exports = {
   // 获取mv
   '/mv': async (req, res) => {
     const { singermid, pageNo = 1, pageSize = 20, raw } = req.query;
-  
+
     if (!singermid) {
       return res.send({
         result: 500,
         errMsg: 'singermid 不能为空',
       })
     }
-  
+
     const result = await request({
       url: 'http://c.y.qq.com/mv/fcgi-bin/fcg_singer_mv.fcg',
       data: {
@@ -207,7 +207,7 @@ module.exports = {
         cid: 205360581,
       }
     });
-  
+
     if (Number(raw)) {
       res.send(result);
     } else {
@@ -221,20 +221,20 @@ module.exports = {
         }
       })
     }
-  
+
   },
 
   // 相似歌手
   '/sim': async (req, res, next) => {
     const { singermid, raw } = req.query;
-  
+
     if (!singermid) {
       return res.send({
         result: 500,
         errMsg: 'singermid 不能为空',
       })
     }
-  
+
     const result = await request({
       url: 'http://c.y.qq.com/v8/fcg-bin/fcg_v8_simsinger.fcg',
       data: {
@@ -243,7 +243,7 @@ module.exports = {
         utf8: 1,
       }
     });
-  
+
     if (Number(raw)) {
       res.send(result);
     } else {
@@ -260,14 +260,14 @@ module.exports = {
   // 获取歌手分类
   '/category': async (req, res) => {
     const { raw } = req.query;
-  
+
     const result = await request({
       url: 'https://u.y.qq.com/cgi-bin/musicu.fcg',
       data: {
         data: JSON.stringify({"comm":{"ct":24,"cv":0},"singerList":{"module":"Music.SingerListServer","method":"get_singer_list","param":{"area":-100,"sex":-100,"genre":-100,"index":-100,"sin":0,"cur_page":1}}})
       }
     });
-  
+
     if (Number(raw)) {
       res.send(result);
     } else {
@@ -280,8 +280,8 @@ module.exports = {
 
   // 根据类型获取歌手列表
   '/list': async (req, res) => {
-    const { area = -100, sex = -100, genre = -100, index = -100, pageNo = 1, raw } = req.query;
-  
+    const { area = -100, sex = -100, genre = -100, index = -100, pageNo = 10, raw } = req.query;
+
     const result = await request({
       url: 'https://u.y.qq.com/cgi-bin/musicu.fcg',
       data: {
@@ -299,23 +299,23 @@ module.exports = {
               genre: genre / 1,
               index: index / 1,
               sin: (pageNo - 1) * 80,
-              cur_page: pageNo / 1,
+              cur_page: pageNo,
             }
           }
         })
       }
     });
-  
+
     if (Number(raw)) {
       res.send(result);
     } else {
-      const trueData = result.singerList.data;
-      trueData.list = trueData.singerlist;
-      delete trueData.tags;
-      delete trueData.singerlist;
+      // const trueData = result.singerList.data;
+      // trueData.list = trueData.singerlist;
+      // delete trueData.tags;
+      // delete trueData.singerlist;
       res.send({
         result: 100,
-        data: trueData,
+        data: result.singerList.data.singerlist,
       })
     }
   }
